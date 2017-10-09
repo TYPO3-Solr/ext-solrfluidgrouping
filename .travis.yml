@@ -1,0 +1,48 @@
+language: php
+
+php:
+  - 7.0
+  - 7.1
+
+sudo: true
+
+addons:
+  apt:
+    packages:
+      - parallel
+env:
+  global:
+    - TYPO3_DATABASE_NAME="typo3_ci"
+    - TYPO3_DATABASE_HOST="localhost"
+    - TYPO3_DATABASE_USERNAME="root"
+    - TYPO3_DATABASE_PASSWORD=""
+    - EXT_SOLR_VERSION="dev-master"
+  matrix:
+    - TYPO3_VERSION="^8.7"
+    - TYPO3_VERSION="8.x-dev"
+    - TYPO3_VERSION="9.x-dev"
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: TYPO3_VERSION="9.x-dev"
+      php: 7.0
+    - env: TYPO3_VERSION="9.x-dev"
+      php: 7.1
+
+before_install:
+  - composer self-update
+  - composer --version
+  - composer global require fabpot/php-cs-fixer
+  - composer global require namelesscoder/typo3-repository-client
+
+install:
+  - Build/Test/bootstrap.sh
+script:
+  - Build/Test/cibuild.sh
+after_script:
+  - Build/Test/cleanup.sh
+
+cache:
+  directories:
+    - $HOME/.composer/cache

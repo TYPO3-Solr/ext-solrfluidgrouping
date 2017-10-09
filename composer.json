@@ -1,0 +1,71 @@
+{
+  "name": "apache-solr-for-typo3/solrfluidgrouping",
+  "type": "typo3-cms-extension",
+  "description": "Apache Solr for TYPO3",
+  "minimum-stability": "alpha",
+  "license": "GPL-2.0+",
+  "keywords": ["typo3", "TYPO3 CMS", "solr", "search"],
+  "homepage": "http://www.typo3-solr.com",
+  "authors": [
+    {
+      "name": "Timo Hund",
+      "email": "timo.hund@dkd.de"
+    },
+    {
+      "name": "Frans Saris",
+      "email": "frans@beech.it"
+    }
+  ],
+  "support": {
+    "email": "typo3-project-solr@lists.typo3.org",
+    "issues": "https://github.com/TYPO3-Solr/ext-solr/issues",
+    "forum": "http://forum.typo3.org/index.php/f/53/"
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "typo3/cms-core": ">=8.7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": ">=4.8.0 <6.0.0",
+    "nimut/testing-framework": "^1.1"
+  },
+  "replace": {
+    "solrfluidgrouping": "self.version",
+    "typo3-ter/solrfluidgrouping": "self.version"
+  },
+  "autoload": {
+    "psr-4": {
+      "ApacheSolrForTypo3\\Solrfluidgrouping\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ApacheSolrForTypo3\\Solrfluidgrouping\\Tests\\": "Tests/",
+      "ApacheSolrForTypo3\\Solr\\Tests\\": ".Build/Web/typo3conf/ext/solr/Tests/",
+      "TYPO3\\CMS\\Core\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/core/Tests/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "mkdir -p .Build/Web/typo3conf/ext/",
+      "[ -L .Build/Web/typo3conf/ext/solrfluidgrouping ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/solrfluidgrouping"
+    ]
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    },
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "web-dir": ".Build/Web"
+    },
+    "typo3/class-alias-loader": {
+      "always-add-alias-loader": true
+    }
+  }
+}
