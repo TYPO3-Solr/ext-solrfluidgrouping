@@ -254,26 +254,7 @@
               "indexed":"2017-09-26T10:07:06Z",
               "score":1.0}]
           }}]}},
-  "facet_counts":{
-    "facet_queries":{},
-    "facet_fields":{
-      "type":{
-        "pages":42,
-        "tx_news_domain_model_news":2},
-      "keywords_stringM":{
-        "Content elements":9,
-        "example setup":1,
-        "install":1,
-        "introduction package":1,
-        "lists":2,
-        "menus":1,
-        "typo3":1},
-      "author_stringM":{
-        "Timo Hund":4,
-        "Stefanie Hund":2}},
-    "facet_ranges":{},
-    "facet_intervals":{},
-    "facet_heatmaps":{}},
+
   "highlighting":{
     "9e9d76a598c63d4ff578fea5c5254c27d9554fc6/pages/37/0/0/0":{
       "content":["Easily Position Text and Media                   TYPO3 makes working with text and media a snap. TYPO3's text with media content element gives editors precise control over captions, alternative text a"]},

@@ -56,11 +56,6 @@ class SearchResultSetServiceTest extends UnitTest
 
         $searchMock = $this->getDumbMock(Search::class);
 
-        /** @var $typoScriptConfigurationMock TypoScriptConfiguration */
-        $typoScriptConfigurationMock = $this->getDumbMock(TypoScriptConfiguration::class);
-        $typoScriptConfigurationMock->expects($this->any())->method('getSearchQueryReturnFieldsAsArray')->will($this->returnValue(['*']));
-        $typoScriptConfigurationMock->expects($this->any())->method('getSearchGrouping')->will($this->returnValue(true));
-
         $configurationArray = [
             'plugin.' => [
                 'tx_solr.' => [
@@ -93,6 +88,7 @@ class SearchResultSetServiceTest extends UnitTest
 
         $fakeRequest = $this->getDumbMock(SearchRequest::class);
         $fakeRequest->expects($this->any())->method('getResultsPerPage')->willReturn(10);
+        $fakeRequest->expects($this->any())->method('getContextTypoScriptConfiguration')->will($this->returnValue($typoScriptConfiguration));
         $searchResultSet = $searchResultSetService->search($fakeRequest);
 
         $this->assertSame(1, $searchResultSet->getSearchResults()->getGroups()->getCount(), 'There should be 1 Groups of search results');

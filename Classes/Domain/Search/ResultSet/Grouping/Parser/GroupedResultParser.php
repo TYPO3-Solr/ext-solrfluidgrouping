@@ -25,34 +25,43 @@ class GroupedResultParser extends AbstractResultParser {
     public function parse(SearchResultSet $resultSet, bool $useRawDocuments = true)
     {
         $searchResultCollection = new SearchResultCollection();
-        $groupsConfiguration = $this->typoScriptConfiguration->getSearchGroupingGroupsConfiguration();
+
+        $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
+        $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
 
         if (empty($groupsConfiguration)) {
             return $searchResultCollection;
         }
 
+        $searchResultCollection = $this->parseGroups($resultSet, $groupsConfiguration, $searchResultCollection);
+        return $searchResultCollection;
+    }
+
+    /**
+     * @param SearchResultSet $resultSet
+     * @param array $groupsConfiguration
+     * @param SearchResultCollection $searchResultCollection
+     * @return SearchResultCollection
+     */
+    protected function parseGroups(SearchResultSet $resultSet, $groupsConfiguration, $searchResultCollection):SearchResultCollection
+    {
         $parsedData = $resultSet->getResponse()->getParsedData();
         $allGroups = new GroupCollection();
 
         foreach ($groupsConfiguration as $name => $options) {
             $name = rtrim($name, '.');
-            if(!empty($options['field'])) {
+            if (!empty($options['field'])) {
                 $group = $this->parseFieldGroup($parsedData, $name, $options);
-            } elseif(!empty($options['queries.'])) {
+            } elseif (!empty($options['queries.'])) {
                 $group = $this->parseQueryGroup($parsedData, $name, $options);
             }
 
-            if($group === null) {
+            if ($group === null) {
                 continue;
             }
 
             $allGroups[] = $group;
-            foreach($group->getGroupItems() as $groupItem) {
-                /** @var $groupItem GroupItem */
-                foreach($groupItem->getSearchResults() as $searchResult) {
-                    $searchResultCollection[] = $searchResult;
-                }
-            }
+            $searchResultCollection = $this->addAllSearchResultsOfGroupToGlobalSearchResults($group, $searchResultCollection);
         }
 
         $searchResultCollection->setGroups($allGroups);
@@ -142,7 +151,7 @@ class GroupedResultParser extends AbstractResultParser {
         foreach ($rawGroup->doclist->docs as $rawDoc) {
             $solrDocument = new \Apache_Solr_Document();
             foreach(get_object_vars($rawDoc) as $key => $value) {
-                $solrDocument->addField($key, $value);
+                $solrDocument->setField($key, $value);
             }
 
             $document = $this->searchResultBuilder->fromApacheSolrDocument($solrDocument);
@@ -170,13 +179,30 @@ class GroupedResultParser extends AbstractResultParser {
 
     /**
      * @param \ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet $resultSet
-     * @return mixed
+     * @return bool
      */
-    public function canParse(SearchResultSet $resultSet)
+    public function canParse(SearchResultSet $resultSet): bool
     {
-        $groupsConfiguration = $this->typoScriptConfiguration->getSearchGroupingGroupsConfiguration();
-        $groupingEnabled = $this->typoScriptConfiguration->getSearchGrouping();
+        $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
+        $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
+        $groupingEnabled = $configuration->getSearchGrouping();
 
         return $groupingEnabled && count($groupsConfiguration > 0);
+    }
+
+    /**
+     * @param Group $group
+     * @param SearchResultCollection $searchResultCollection
+     * @return SearchResultCollection
+     */
+    protected function addAllSearchResultsOfGroupToGlobalSearchResults(Group $group, SearchResultCollection $searchResultCollection): SearchResultCollection
+    {
+        foreach ($group->getGroupItems() as $groupItem) {
+            /** @var $groupItem GroupItem */
+            foreach ($groupItem->getSearchResults() as $searchResult) {
+                $searchResultCollection[] = $searchResult;
+            }
+        }
+        return $searchResultCollection;
     }
 }

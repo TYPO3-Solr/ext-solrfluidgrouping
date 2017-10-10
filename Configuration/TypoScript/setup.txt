@@ -16,5 +16,12 @@ plugin.tx_solr {
 			}
 		}
 	}
+
+	view {
+		templateRootPaths {
+			10 = EXT:solrfluidgrouping/Resources/Private/Templates/
+		}
+
+	}
 }
 
