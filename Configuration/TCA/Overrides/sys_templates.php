@@ -3,5 +3,5 @@ defined('TYPO3_MODE') or die();
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
     'solrfluidgrouping',
     'Configuration/TypoScript/',
-    'Apache Solr - Fluid Result Grouping'
+    'Search - (Example) Fluid result grouping on type field'
 );

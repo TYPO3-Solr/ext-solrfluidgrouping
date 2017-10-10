@@ -1,10 +1,13 @@
-Apache Solr for TYPO3 - Fluid template rendering
+Apache Solr for TYPO3 - Grouping for fluid templating
 ============================================================
 
 
-[![Build Status](https://travis-ci.com/TYPO3-Solr/ext-solrfluid.svg?branch=master)](https://travis-ci.com/TYPO3-Solr/ext-solrfluid)
+[![Build Status](https://travis-ci.com/TYPO3-Solr/ext-solrfluidgrouping.svg?branch=master)](https://travis-ci.com/TYPO3-Solr/ext-solrfluidgrouping)
 
-This extension is an addon for the TYPO3 "solr" extension
+About
+-----
+
+This addon provides grouping for the fluid templating in EXT:solr.
 
 How to run the UnitTests
 ------------------------
