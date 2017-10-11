@@ -1,19 +1,31 @@
 <?php
 namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
 
-/*
- * This file is part of the TYPO3 CMS project.
+/***************************************************************
+ *  Copyright notice
  *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
+ *  (c) 2017 Timo Hund <timo.hund@dkd.de>
+ *  All rights reserved
  *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- * The TYPO3 project - inspiring people to share!
- */
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
 
+use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
+use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequestAware;
 use ApacheSolrForTypo3\Solr\Query;
 use ApacheSolrForTypo3\Solr\Query\Modifier\Modifier;
 use ApacheSolrForTypo3\Solr\System\Configuration\TypoScriptConfiguration;
@@ -25,33 +37,19 @@ use ApacheSolrForTypo3\Solr\Util;
  * @author Ingo Renner <ingo@typo3.org>
  * @author Frans Saris <frans@beech.it>
  */
-class Grouping implements Modifier
+class Grouping implements Modifier, SearchRequestAware
 {
+    /**
+     * @var SearchRequest
+     */
+    protected $searchRequest;
 
     /**
-     * Solr configuration
-     *
-     * @var TypoScriptConfiguration
+     * @param SearchRequest $searchRequest
      */
-    protected $configuration;
-
-    /**
-     * Grouping related configuration
-     *
-     * plugin.tx.solr.search.grouping
-     *
-     * @var array
-     */
-    protected $groupingConfiguration;
-
-    /**
-     * Constructor
-     *
-     */
-    public function __construct()
+    public function setSearchRequest(SearchRequest $searchRequest)
     {
-        $this->configuration = Util::getSolrConfiguration();
-        $this->groupingConfiguration = $this->configuration->getObjectByPathOrDefault('plugin.tx_solr.search.grouping.', ['groups.' => []]);
+        $this->searchRequest = $searchRequest;
     }
 
     /**
@@ -64,14 +62,23 @@ class Grouping implements Modifier
     public function modifyQuery(Query $query)
     {
         $grouping = $query->getGrouping();
-
         $grouping->setIsEnabled(true);
-        $grouping->setResultsPerGroup($this->findHighestGroupResultsLimit());
-        if (!empty($this->groupingConfiguration['numberOfGroups'])) {
-            $grouping->setNumberOfGroups($this->groupingConfiguration['numberOfGroups']);
+
+        $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGrouping();
+
+        // since apache solr does not support to set the offset per group we calculate the results perGroup value here to
+        // cover the last document
+        $highestGroupPage = $this->searchRequest->getHighestGroupPage();
+        $highestLimit = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGroupingHighestGroupResultsLimit();
+        $resultsPerGroup = $highestGroupPage * $highestLimit;
+
+        $grouping->setResultsPerGroup($resultsPerGroup);
+
+        if (!empty($groupingConfiguration['numberOfGroups'])) {
+            $grouping->setNumberOfGroups($groupingConfiguration['numberOfGroups']);
         }
 
-        $configuredGroups = $this->groupingConfiguration['groups.'];
+        $configuredGroups = $groupingConfiguration['groups.'];
         foreach ($configuredGroups as $groupName => $groupConfiguration) {
             if (!empty($groupConfiguration['field'])) {
                 $grouping->addField($groupConfiguration['field']);
@@ -87,37 +94,6 @@ class Grouping implements Modifier
         }
 
         return $query;
-    }
-
-    /**
-     * Finds the highest number of results per group.
-     *
-     * Checks the global setting, as well as each group configuration's
-     * individual results limit.
-     *
-     * The lowest limit returned will be 1, as this is the default for Solr's
-     * group.limit parameter. See http://wiki.apache.org/solr/FieldCollapsing
-     *
-     * @return int Highest number of results per group configured.
-     */
-    protected function findHighestGroupResultsLimit()
-    {
-        $highestLimit = 1;
-
-        if (!empty($this->groupingConfiguration['numberOfResultsPerGroup'])) {
-            $highestLimit = $this->groupingConfiguration['numberOfResultsPerGroup'];
-        }
-
-        $configuredGroups = $this->groupingConfiguration['groups.'];
-        foreach ($configuredGroups as $groupName => $groupConfiguration) {
-            if (!empty($groupConfiguration['numberOfResultsPerGroup'])
-                && $groupConfiguration['numberOfResultsPerGroup'] > $highestLimit
-            ) {
-                $highestLimit = $groupConfiguration['numberOfResultsPerGroup'];
-            }
-        }
-
-        return $highestLimit;
     }
 }
 

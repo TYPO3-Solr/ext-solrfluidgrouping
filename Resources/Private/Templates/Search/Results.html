@@ -65,13 +65,16 @@
 				<f:then>
 					<f:for each="{resultSet.searchresults.groups}" as="group">
 						<h2>{group.groupname}</h2>
-						<f:for each="{group.groupitems}" as="groupitem">
-							<div>
-								<strong>{groupitem.groupValue} <span>({groupitem.numFound})</span></strong>
-								<f:for each="{groupitem.searchResults}" as="document">
-									<f:render partial="Result/Document" section="Document" arguments="{resultSet:resultSet, document:document}" />
-								</f:for>
-							</div>
+
+						<f:for each="{group.groupitems}" as="groupItem">
+							<strong>{groupItem.groupValue} <span>({groupItem.numFound})</span></strong>
+							<s:widget.groupItemPaginate groupItem="{groupItem}" resultSet="{resultSet}">
+								<ol start="{pagination.displayRangeStart}" class="results-list">
+									<f:for each="{documents}" as="document">
+										<f:render partial="Result/Document" section="Document" arguments="{resultSet:resultSet, document:document}" />
+									</f:for>
+								</ol>
+							</s:widget.groupItemPaginate>
 						</f:for>
 					</f:for>
 				</f:then>
