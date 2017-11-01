@@ -69,7 +69,7 @@
 						<f:for each="{group.groupitems}" as="groupItem">
 							<strong>{groupItem.groupValue} <span>({groupItem.numFound})</span></strong>
 							<s:widget.groupItemPaginate groupItem="{groupItem}" resultSet="{resultSet}">
-								<ol start="{pagination.displayRangeStart}" class="results-list">
+								<ol start="{pagination.resultCountStart}" class="results-list">
 									<f:for each="{documents}" as="document">
 										<f:render partial="Result/Document" section="Document" arguments="{resultSet:resultSet, document:document}" />
 									</f:for>
