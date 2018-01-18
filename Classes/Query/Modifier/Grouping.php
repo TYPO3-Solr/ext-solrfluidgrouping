@@ -26,10 +26,9 @@ namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequestAware;
-use ApacheSolrForTypo3\Solr\Query;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\Query;
 use ApacheSolrForTypo3\Solr\Query\Modifier\Modifier;
-use ApacheSolrForTypo3\Solr\System\Configuration\TypoScriptConfiguration;
-use ApacheSolrForTypo3\Solr\Util;
+
 
 /**
  * Modifies a query to add grouping parameters
