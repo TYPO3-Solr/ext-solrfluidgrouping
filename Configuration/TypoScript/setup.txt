@@ -9,9 +9,6 @@ plugin.tx_solr {
 			groups {
 				typeGroup {
 					field = type
-
-					# Example for sorting within a group
-					#sortBy = created desc
 				}
 			}
 		}
