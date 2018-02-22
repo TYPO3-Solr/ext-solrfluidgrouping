@@ -203,7 +203,7 @@ class GroupedResultParser extends AbstractResultParser {
             $rawGroup->doclist->start,
             $rawGroup->doclist->maxScore);
 
-        $currentPage = $searchRequest->getGroupItemPage($parentGroup->getGroupName(), $groupValue);
+        $currentPage = $searchRequest->getGroupItemPage($parentGroup->getGroupName(), (string)$groupValue);
         $perPage = $parentGroup->getResultsPerPage();
         $offset = ($currentPage - 1) * $perPage;
 
