@@ -105,7 +105,7 @@ class GroupedResultParser extends AbstractResultParser {
     {
         if (!empty($options['field'])) {
             return $this->parseFieldGroup($resultSet, $parsedData, $name, $options);
-        } elseif (!empty($options['queries.'])) {
+        } elseif (!empty($options['queries.']) || !empty($options['query'])) {
             return $this->parseQueryGroup($resultSet, $parsedData, $name, $options);
         }
 
@@ -162,8 +162,8 @@ class GroupedResultParser extends AbstractResultParser {
         $group = GeneralUtility::makeInstance(Group::class, $groupedResultName, $resultsPerGroup);
 
         $groupItems = new GroupItemCollection();
-
-        foreach ($groupedResultConfiguration['queries.'] as $queryKey => $queryString) {
+        $queries = $this->getQueriesFromConfigurationArray($groupedResultConfiguration);
+        foreach ($queries as $queryKey => $queryString) {
             $rawGroup = $this->getGroupedResultForQuery($parsedData, $queryString);
 
             if ($rawGroup === null) {
@@ -183,6 +183,27 @@ class GroupedResultParser extends AbstractResultParser {
         $group->setGroupItems($groupItems);
 
         return $group;
+    }
+
+    /**
+     * Retrieves all configured queries independent if they have been configured in query or queries.
+     *
+     * @todo This can be merged into TypoScriptConfiguration when solrfluidgrouping was merged to EXT:solr
+     * @param array $configurationArray
+     * @return array
+     */
+    protected function getQueriesFromConfigurationArray(array $configurationArray) {
+        $queries = [];
+
+        if(!empty($configurationArray['query'])) {
+            $queries[] = $configurationArray['query'];
+        }
+
+        if(!empty($configurationArray['queries.']) && is_array($configurationArray['queries.'])) {
+            $queries = array_merge($queries, $configurationArray['queries.']);
+        }
+
+        return $queries;
     }
 
     /**

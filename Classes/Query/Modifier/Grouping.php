@@ -60,10 +60,15 @@ class Grouping implements Modifier, SearchRequestAware
      */
     public function modifyQuery(Query $query)
     {
+        $isGroupingEnabled = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGrouping();
+        if(!$isGroupingEnabled) {
+            return $query;
+        }
+
         $grouping = $query->getGrouping();
         $grouping->setIsEnabled(true);
 
-        $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGrouping();
+        $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getObjectByPathOrDefault('plugin.tx_solr.search.grouping.', []);
 
         // since apache solr does not support to set the offset per group we calculate the results perGroup value here to
         // cover the last document
@@ -81,9 +86,15 @@ class Grouping implements Modifier, SearchRequestAware
         foreach ($configuredGroups as $groupName => $groupConfiguration) {
             if (!empty($groupConfiguration['field'])) {
                 $grouping->addField($groupConfiguration['field']);
-            } elseif (!empty($groupConfiguration['queries.'])) {
-                foreach ((array)$groupConfiguration['queries.'] as $_query) {
-                    $grouping->addQuery($_query);
+            } else {
+                // query group
+                if (!empty($groupConfiguration['queries.'])) {
+                    foreach ((array)$groupConfiguration['queries.'] as $_query) {
+                        $grouping->addQuery($_query);
+                    }
+                }
+                if (!empty($groupConfiguration['query'])) {
+                    $grouping->addQuery($groupConfiguration['query']);
                 }
             }
 
