@@ -273,8 +273,7 @@ class GroupedResultParser extends AbstractResultParser {
         $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
         $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
         $groupingEnabled = $configuration->getSearchGrouping();
-
-        return $groupingEnabled && count($groupsConfiguration > 0);
+        return $groupingEnabled && (count($groupsConfiguration) > 0);
     }
 
     /**
