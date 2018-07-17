@@ -17,9 +17,9 @@ $EM_CONF[$_EXTKEY] = array(
         'depends' => array(
             'scheduler' => '',
             'solr' => '8.0.1-',
-            'extbase' => '8.7.0-8.9.99',
-            'fluid' => '8.7.0-8.9.99',
-            'typo3' => '8.7.0-8.9.99'
+            'extbase' => '8.7.0-9.3.99',
+            'fluid' => '8.7.0-9.3.99',
+            'typo3' => '8.7.0-9.3.99'
         ),
         'conflicts' => array(),
         'suggests' => array(
