@@ -6,8 +6,8 @@
 conf.py:
   copyright: 2018
   project: Documentation for EXT:solrfluidgrouping grouping for solr results
-  version: 1.0.0
-  release: 1.0.0
+  version: 1.1.0
+  release: 1.1.0
   extensions:
     - sphinx.ext.intersphinx
     - t3sphinx.ext.t3extras

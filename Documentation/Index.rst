@@ -14,7 +14,7 @@
 		solrfluidgrouping
 
 	:Version:
-		1.0.0
+		1.1.0
 
 	:Language:
 		en
@@ -32,7 +32,7 @@
 		Timo Hund
 
 	:Email:
-		ingo@typo3.org
+		timo.hund@dkd.de
 
 	:License:
 		This document is published under the Open Content License
