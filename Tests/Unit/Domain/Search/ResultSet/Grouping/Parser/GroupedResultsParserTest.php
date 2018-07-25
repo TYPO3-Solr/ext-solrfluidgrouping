@@ -49,7 +49,8 @@ class GroupedResultsParserTest extends UnitTest
         $resultSet = $this->getSearchResultSetMockFromConfigurationAndFixtureFileName($configurationMock, 'fake_solr_response_group_on_queries.json');
 
         $parser = new GroupedResultParser();
-        $searchResultsCollection = $parser->parse($resultSet);
+        $searchResultsSet = $parser->parse($resultSet);
+        $searchResultsCollection = $searchResultsSet->getSearchResults();
 
         $this->assertTrue($searchResultsCollection->getHasGroups());
         $this->assertSame(1, $searchResultsCollection->getGroups()->getCount());
@@ -75,7 +76,9 @@ class GroupedResultsParserTest extends UnitTest
         $resultSet = $this->getSearchResultSetMockFromConfigurationAndFixtureFileName($configurationMock, 'fake_solr_response_group_on_type_field.json');
 
         $parser = new GroupedResultParser();
-        $searchResultsCollection = $parser->parse($resultSet);
+        $searchResultsSet = $parser->parse($resultSet);
+        $searchResultsCollection = $searchResultsSet->getSearchResults();
+
 
         $this->assertTrue($searchResultsCollection->getHasGroups());
         $this->assertSame(1, $searchResultsCollection->getGroups()->getCount(), 'There should be 1 Groups of search results');
