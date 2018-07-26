@@ -61,10 +61,10 @@ class GroupedResultParser extends AbstractResultParser {
         }
 
         $searchResultCollection = $this->parseGroups($resultSet, $groupsConfiguration, $searchResultCollection);
-
-        $this->calculateOverallMaximumScore($resultSet, $searchResultCollection);
-
         $resultSet->setSearchResults($searchResultCollection);
+
+        $this->calculateSummarizedGroupData($resultSet);
+
         return $resultSet;
     }
 
@@ -300,15 +300,16 @@ class GroupedResultParser extends AbstractResultParser {
     }
 
     /**
-     * Calculates the overall maximum score and passed it to the SearchResultSet.
+     * Some data (maximumScore and allResultCount is summarized from all groups and assigned
+     * to the SearchResultSet to have that data available independent from the groups.
      *
      * @param SearchResultSet $resultSet
-     * @param $searchResultCollection
      */
-    private function calculateOverallMaximumScore(SearchResultSet $resultSet, $searchResultCollection)
+    private function calculateSummarizedGroupData(SearchResultSet $resultSet)
     {
         $overAllMaximumScore = 0.0;
-        foreach ($searchResultCollection->getGroups() as $group) {
+        $allResultCount = 0;
+        foreach ($resultSet->getSearchResults()->getGroups() as $group) {
             /** @var $group Group */
             foreach ($group->getGroupItems() as $groupItem) {
                 /** @var $groupItem GroupItem */
@@ -316,9 +317,13 @@ class GroupedResultParser extends AbstractResultParser {
                     $overAllMaximumScore = $groupItem->getMaximumScore();
                 }
 
+                $allResultCount += $groupItem->getAllResultCount();
+
             }
         }
 
         $resultSet->setMaximumScore($overAllMaximumScore);
+        $resultSet->setAllResultCount($allResultCount);
     }
+
 }

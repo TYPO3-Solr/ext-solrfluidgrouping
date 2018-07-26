@@ -96,6 +96,7 @@ class GroupedResultsParserTest extends UnitTest
         $this->assertSame(2, $typeGroup->getByPosition(1)->getSearchResults()->getCount(), 'There should be 2 documents in the group news');
 
         $this->assertSame(7, $searchResultsCollection->getCount(), 'There should be a 7 search results when they are fetched without groups');
+        $this->assertSame(44, $resultSet->getAllResultCount(), 'Unexpected allResultCount');
     }
 
     /**
