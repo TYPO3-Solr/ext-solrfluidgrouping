@@ -47,9 +47,9 @@ class GroupedResultParser extends AbstractResultParser {
      *
      * @param SearchResultSet $resultSet
      * @param bool $useRawDocuments
-     * @return SearchResultCollection
+     * @return SearchResultSet
      */
-    public function parse(SearchResultSet $resultSet, bool $useRawDocuments = true): SearchResultCollection
+    public function parse(SearchResultSet $resultSet, bool $useRawDocuments = true): SearchResultSet
     {
         $searchResultCollection = new SearchResultCollection();
 
@@ -57,11 +57,15 @@ class GroupedResultParser extends AbstractResultParser {
         $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
 
         if (empty($groupsConfiguration)) {
-            return $searchResultCollection;
+            return $resultSet;
         }
 
         $searchResultCollection = $this->parseGroups($resultSet, $groupsConfiguration, $searchResultCollection);
-        return $searchResultCollection;
+
+        $this->calculateOverallMaximumScore($resultSet, $searchResultCollection);
+
+        $resultSet->setSearchResults($searchResultCollection);
+        return $resultSet;
     }
 
     /**
@@ -293,5 +297,28 @@ class GroupedResultParser extends AbstractResultParser {
             }
         }
         return $searchResultCollection;
+    }
+
+    /**
+     * Calculates the overall maximum score and passed it to the SearchResultSet.
+     *
+     * @param SearchResultSet $resultSet
+     * @param $searchResultCollection
+     */
+    private function calculateOverallMaximumScore(SearchResultSet $resultSet, $searchResultCollection)
+    {
+        $overAllMaximumScore = 0.0;
+        foreach ($searchResultCollection->getGroups() as $group) {
+            /** @var $group Group */
+            foreach ($group->getGroupItems() as $groupItem) {
+                /** @var $groupItem GroupItem */
+                if ($groupItem->getMaximumScore() > $overAllMaximumScore) {
+                    $overAllMaximumScore = $groupItem->getMaximumScore();
+                }
+
+            }
+        }
+
+        $resultSet->setMaximumScore($overAllMaximumScore);
     }
 }

@@ -85,6 +85,7 @@ class SearchResultSetServiceTest extends UnitTest
         $fakeRequest = $this->getDumbMock(SearchRequest::class);
         $fakeRequest->expects($this->any())->method('getResultsPerPage')->willReturn(10);
         $fakeRequest->expects($this->any())->method('getContextTypoScriptConfiguration')->will($this->returnValue($typoScriptConfiguration));
+        $fakeRequest->expects($this->any())->method('getAdditionalFilters')->willReturn([]);
         $searchResultSet = $searchResultSetService->search($fakeRequest);
 
         $this->assertSame(1, $searchResultSet->getSearchResults()->getGroups()->getCount(), 'There should be 1 Groups of search results');
