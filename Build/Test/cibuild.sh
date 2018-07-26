@@ -29,6 +29,11 @@ echo "Run unit tests"
 UNIT_BOOTSTRAP=".Build/vendor/nimut/testing-framework/res/Configuration/UnitTestsBootstrap.php"
 .Build/bin/phpunit --colors -c Build/Test/UnitTests.xml --coverage-html=../../../solrfluidgrouping-coverage-unit/ --bootstrap=$UNIT_BOOTSTRAP
 
+if [ $? -ne "0" ]; then
+   echo "Unit tests are failing please fix them"
+   exit 1
+fi
+
 echo "Run integration tests"
 
 #
