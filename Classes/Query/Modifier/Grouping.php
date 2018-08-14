@@ -24,10 +24,13 @@ namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\Grouping as GroupingParameter;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\Query;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequestAware;
-use ApacheSolrForTypo3\Solr\Domain\Search\Query\Query;
 use ApacheSolrForTypo3\Solr\Query\Modifier\Modifier;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 
 /**
@@ -42,6 +45,22 @@ class Grouping implements Modifier, SearchRequestAware
      * @var SearchRequest
      */
     protected $searchRequest;
+
+    /**
+     * QueryBuilder
+     *
+     * @var QueryBuilder|object
+     */
+    protected $queryBuilder;
+
+    /**
+     * AccessComponent constructor.
+     * @param QueryBuilder|null
+     */
+    public function __construct(QueryBuilder $queryBuilder = null)
+    {
+        $this->queryBuilder = $queryBuilder ?? GeneralUtility::makeInstance(QueryBuilder::class);
+    }
 
     /**
      * @param SearchRequest $searchRequest
@@ -65,8 +84,8 @@ class Grouping implements Modifier, SearchRequestAware
             return $query;
         }
 
-        $grouping = $query->getGrouping();
-        $grouping->setIsEnabled(true);
+        $grouping = new GroupingParameter(true);
+
 
         $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getObjectByPathOrDefault('plugin.tx_solr.search.grouping.', []);
 
@@ -102,6 +121,8 @@ class Grouping implements Modifier, SearchRequestAware
                 $grouping->addSorting($groupConfiguration['sortBy']);
             }
         }
+
+        $query = $this->queryBuilder->startFrom($query)->useGrouping($grouping)->getQuery();
 
         return $query;
     }

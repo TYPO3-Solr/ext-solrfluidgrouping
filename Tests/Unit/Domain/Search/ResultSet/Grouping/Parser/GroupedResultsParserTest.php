@@ -17,6 +17,7 @@ namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet\Gro
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\System\Configuration\TypoScriptConfiguration;
+use ApacheSolrForTypo3\Solr\System\Solr\ResponseAdapter;
 use ApacheSolrForTypo3\Solr\Tests\Unit\UnitTest;
 use ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser;
 
@@ -117,13 +118,11 @@ class GroupedResultsParserTest extends UnitTest
 
     /**
      * @param $fixtureFile
-     * @return \Apache_Solr_Response
+     * @return ResponseAdapter
      */
     protected function getFakeApacheSolrResponse($fixtureFile)
     {
         $fakeResponseJson = $this->getFixtureContentByName($fixtureFile);
-        $httpResponseMock = $this->getDumbMock('\Apache_Solr_HttpTransport_Response');
-        $httpResponseMock->expects($this->any())->method('getBody')->will($this->returnValue($fakeResponseJson));
-        return new \Apache_Solr_Response($httpResponseMock);
+        return new ResponseAdapter($fakeResponseJson);
     }
 }

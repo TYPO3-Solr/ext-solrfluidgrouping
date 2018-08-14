@@ -30,9 +30,11 @@ use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupCollection;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupItem;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupItemCollection;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\AbstractResultParser;
+use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\SearchResult;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\SearchResultCollection;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
+use ApacheSolrForTypo3\Solr\System\Solr\Document\Document;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -237,7 +239,7 @@ class GroupedResultParser extends AbstractResultParser {
         $relevantResults = array_slice($rawGroup->doclist->docs, $offset, $perPage);
 
         foreach ($relevantResults as $rawDoc) {
-            $solrDocument = new \Apache_Solr_Document();
+            $solrDocument = new Document();
             foreach(get_object_vars($rawDoc) as $key => $value) {
                 $solrDocument->setField($key, $value);
             }
