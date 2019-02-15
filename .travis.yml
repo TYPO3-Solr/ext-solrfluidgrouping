@@ -3,6 +3,7 @@ language: php
 php:
   - 7.0
   - 7.1
+  - 7.2
 
 sudo: true
 
@@ -16,19 +17,30 @@ env:
     - TYPO3_DATABASE_HOST="localhost"
     - TYPO3_DATABASE_USERNAME="root"
     - TYPO3_DATABASE_PASSWORD=""
-    - EXT_SOLR_VERSION="dev-master"
+    - EXT_SOLR_VERSION="dev-release-9.0.x"
   matrix:
-    - TYPO3_VERSION="^8.7"
-    - TYPO3_VERSION="8.x-dev"
-    - TYPO3_VERSION="9.x-dev"
+    - TYPO3_VERSION="^8.7.0"
+    - TYPO3_VERSION="^9.5.0"
+    - TYPO3_VERSION="dev-master"
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TYPO3_VERSION="9.x-dev"
-      php: 7.0
-    - env: TYPO3_VERSION="9.x-dev"
+    - env: TYPO3_VERSION="dev-master"
+      php: 7.2
+    - env: TYPO3_VERSION="dev-master"
       php: 7.1
+    - env: TYPO3_VERSION="dev-master"
+      php: 7.0
+  exclude:
+    - php: 7.0
+      env: TYPO3_VERSION="^9.5.0"
+    - php: 7.1
+      env: TYPO3_VERSION="^9.5.0"
+    - php: 7.1
+      env: TYPO3_VERSION="dev-master"
+    - php: 7.0
+      env: TYPO3_VERSION="dev-master"
 
 before_install:
   - composer self-update
