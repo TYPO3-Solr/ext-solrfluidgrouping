@@ -26,11 +26,10 @@
     "typo3/cms-core": ">=8.7.0"
   },
   "require-dev": {
-    "phpunit/phpunit": ">=4.8.0 <6.0.0",
-    "nimut/testing-framework": "^1.1"
+    "phpunit/phpunit": "6.0.0",
+    "nimut/testing-framework": "^4.0.0"
   },
   "replace": {
-    "solrfluidgrouping": "self.version",
     "typo3-ter/solrfluidgrouping": "self.version"
   },
   "autoload": {
