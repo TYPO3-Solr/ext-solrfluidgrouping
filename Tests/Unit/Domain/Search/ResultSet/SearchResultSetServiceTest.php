@@ -16,6 +16,7 @@ namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\Group;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\ResultParserRegistry;
+use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSetService;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\Search;
@@ -24,6 +25,8 @@ use ApacheSolrForTypo3\Solr\System\Solr\ResponseAdapter;
 use ApacheSolrForTypo3\Solr\Tests\Unit\UnitTest;
 use ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * This processor is used to transform the solr response into a
@@ -81,12 +84,20 @@ class SearchResultSetServiceTest extends UnitTest
 
             /** @var $searchResultSetService SearchResultSetService */
         $searchResultSetService = $this->getMockBuilder(SearchResultSetService::class)->setMethods(['doASearch'])->setConstructorArgs([$typoScriptConfiguration, $searchMock])->getMock();
+        $objectManagerMock = $this->getDumbMock(ObjectManagerInterface::class);
+
+        $searchResultSet =  new SearchResultSet();
+        $objectManagerMock->expects($this->once())->method('get')->willReturn($searchResultSet);
+
+        $searchResultSetService->injectObjectManager($objectManagerMock);
         $searchResultSetService->expects($this->once())->method('doASearch')->will($this->returnValue($fakeResponse));
 
         $fakeRequest = $this->getDumbMock(SearchRequest::class);
         $fakeRequest->expects($this->any())->method('getResultsPerPage')->willReturn(10);
         $fakeRequest->expects($this->any())->method('getContextTypoScriptConfiguration')->will($this->returnValue($typoScriptConfiguration));
         $fakeRequest->expects($this->any())->method('getAdditionalFilters')->willReturn([]);
+        $searchResultSet->setUsedSearchRequest($fakeRequest);
+
         $searchResultSet = $searchResultSetService->search($fakeRequest);
 
         $this->assertSame(1, $searchResultSet->getSearchResults()->getGroups()->getCount(), 'There should be 1 Groups of search results');

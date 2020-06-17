@@ -53,13 +53,7 @@ echo "Using extension path $EXTENSION_ROOTPATH"
 echo "Using package path $TYPO3_PATH_PACKAGES"
 echo "Using web path $TYPO3_PATH_WEB"
 
-if [[ $TYPO3_VERSION = *"master"*  || $TYPO3_VERSION = *"9"* ]]; then
-    composer require --dev --update-with-dependencies typo3/cms-core="$TYPO3_VERSION" typo3/cms-backend="$TYPO3_VERSION" typo3/cms-fluid="$TYPO3_VERSION" typo3/cms-frontend="$TYPO3_VERSION" typo3/cms-extbase="$TYPO3_VERSION" typo3/cms-reports="$TYPO3_VERSION" typo3/cms-scheduler="$TYPO3_VERSION" typo3/cms-tstemplate="$TYPO3_VERSION"
-else
-    composer require --dev typo3/cms="$TYPO3_VERSION"
-fi
-
-composer require --dev apache-solr-for-typo3/solr="$EXT_SOLR_VERSION"
+composer require --dev --update-with-dependencies typo3/cms-core="$TYPO3_VERSION" typo3/cms-backend="$TYPO3_VERSION" typo3/cms-fluid="$TYPO3_VERSION" typo3/cms-frontend="$TYPO3_VERSION" typo3/cms-extbase="$TYPO3_VERSION" typo3/cms-reports="$TYPO3_VERSION" typo3/cms-scheduler="$TYPO3_VERSION" typo3/cms-tstemplate="$TYPO3_VERSION"  apache-solr-for-typo3/solr="$EXT_SOLR_VERSION"
 
 # Restore composer.json
 git checkout composer.json

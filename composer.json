@@ -23,14 +23,11 @@
   },
   "require": {
     "php": ">=7.0.0",
-    "typo3/cms-core": ">=8.7.0"
+    "typo3/cms-core": ">=9.5.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "6.0.0",
-    "nimut/testing-framework": "^4.0.0"
-  },
-  "replace": {
-    "typo3-ter/solrfluidgrouping": "self.version"
+    "phpunit/phpunit": "^6.0 || ^7.5.6 || ^8",
+    "nimut/testing-framework": "^5.0.0"
   },
   "autoload": {
     "psr-4": {
@@ -57,14 +54,11 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.0.x-dev"
+      "dev-master": "2.1.x-dev"
     },
     "typo3/cms": {
       "cms-package-dir": "{$vendor-dir}/typo3/cms",
       "web-dir": ".Build/Web"
-    },
-    "typo3/class-alias-loader": {
-      "always-add-alias-loader": true
     }
   }
 }
