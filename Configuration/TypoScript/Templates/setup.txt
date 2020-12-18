@@ -1,8 +1,1 @@
-plugin.tx_solr {
-	view {
-		templateRootPaths {
-			100 = EXT:solrfluidgrouping/Resources/Private/Templates/
-		}
-	}
-}
-
+@import 'EXT:solrfluidgrouping/Configuration/TypoScript/Templates/setup.typoscript'
