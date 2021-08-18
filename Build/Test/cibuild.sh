@@ -5,8 +5,9 @@ echo "PWD: $(pwd)"
 export TYPO3_PATH_WEB="$(pwd)/.Build/Web"
 export TYPO3_PATH_PACKAGES="$(pwd)/.Build/vendor/"
 
+TEST_SUITES_STATUS_CODE=0
 
-if [ $TRAVIS ]; then
+if [ "$TRAVIS" ]; then
     # Travis does not have composer's bin dir in $PATH
     export PATH="$PATH:$HOME/.composer/vendor/bin"
 fi
@@ -15,12 +16,12 @@ fi
 php-cs-fixer --version > /dev/null 2>&1
 if [ $? -eq "0" ]; then
     echo "Check PSR-2 compliance"
+    
     php-cs-fixer fix --diff --verbose --dry-run --rules='{"function_declaration": {"closure_function_spacing": "none"}}' Classes
-
     if [ $? -ne "0" ]; then
         echo "Some files are not PSR-2 compliant"
         echo "Please fix the files listed above"
-        exit 1
+        TEST_SUITES_STATUS_CODE=1
     fi
 fi
 
@@ -31,7 +32,7 @@ UNIT_BOOTSTRAP=".Build/vendor/nimut/testing-framework/res/Configuration/UnitTest
 
 if [ $? -ne "0" ]; then
    echo "Unit tests are failing please fix them"
-   exit 1
+   TEST_SUITES_STATUS_CODE=1
 fi
 
 echo "Run integration tests"
@@ -40,28 +41,28 @@ echo "Run integration tests"
 # Map the travis and shell variale names to the expected
 # casing of the TYPO3 core.
 #
-if [ -n $TYPO3_DATABASE_NAME ]; then
+if [ -n "$TYPO3_DATABASE_NAME" ]; then
 	export typo3DatabaseName=$TYPO3_DATABASE_NAME
 else
 	echo "No environment variable TYPO3_DATABASE_NAME set. Please set it to run the integration tests."
 	exit 1
 fi
 
-if [ -n $TYPO3_DATABASE_HOST ]; then
+if [ -n "$TYPO3_DATABASE_HOST" ]; then
 	export typo3DatabaseHost=$TYPO3_DATABASE_HOST
 else
 	echo "No environment variable TYPO3_DATABASE_HOST set. Please set it to run the integration tests."
 	exit 1
 fi
 
-if [ -n $TYPO3_DATABASE_USERNAME ]; then
+if [ -n "$TYPO3_DATABASE_USERNAME" ]; then
 	export typo3DatabaseUsername=$TYPO3_DATABASE_USERNAME
 else
 	echo "No environment variable TYPO3_DATABASE_USERNAME set. Please set it to run the integration tests."
 	exit 1
 fi
 
-if [ -n $TYPO3_DATABASE_PASSWORD ]; then
+if [[ -v TYPO3_DATABASE_PASSWORD ]]; then # because empty password is possible
 	export typo3DatabasePassword=$TYPO3_DATABASE_PASSWORD
 else
 	echo "No environment variable TYPO3_DATABASE_PASSWORD set. Please set it to run the integration tests."
@@ -69,4 +70,10 @@ else
 fi
 
 INTEGRATION_BOOTSTRAP=".Build/vendor/nimut/testing-framework/res/Configuration/FunctionalTestsBootstrap.php"
-.Build/bin/phpunit --colors -c Build/Test/IntegrationTests.xml --coverage-html=../../../solrfluidgrouping-coverage-integration/ --bootstrap=$INTEGRATION_BOOTSTRAP
+if ! .Build/bin/phpunit --colors -c Build/Test/IntegrationTests.xml --coverage-html=../../../solrfluidgrouping-coverage-integration/ --bootstrap=$INTEGRATION_BOOTSTRAP
+then
+    echo "Error during running the integration tests please check and fix them"
+    TEST_SUITES_STATUS_CODE=1
+fi
+
+exit $TEST_SUITES_STATUS_CODE
