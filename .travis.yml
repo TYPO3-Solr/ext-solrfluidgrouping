@@ -1,3 +1,5 @@
+dist: bionic
+
 language: php
 
 php:
@@ -17,22 +19,21 @@ env:
     - TYPO3_DATABASE_HOST="localhost"
     - TYPO3_DATABASE_USERNAME="root"
     - TYPO3_DATABASE_PASSWORD=""
-    - EXT_SOLR_VERSION="dev-release-11.0.x"
+    - EXT_SOLR_VERSION="dev-master"
+    - PHP_CS_FIXER_VERSION="v3.0.2"
+    - XDEBUG_MODE="coverage"
   matrix:
-    - TYPO3_VERSION="^9.5.0"
-    - TYPO3_VERSION="^10.4.0"
-    - TYPO3_VERSION="dev-master"
+    - TYPO3_VERSION="^10.4"
+    - TYPO3_VERSION="10.4.x-dev"
 
 matrix:
   fast_finish: true
   allow_failures:
-    - env: TYPO3_VERSION="dev-master"
-  exclude:
+    - env: TYPO3_VERSION="10.4.x-dev"
 
 before_install:
   - composer self-update
   - composer --version
-  - composer global require fabpot/php-cs-fixer
 
 install:
   - Build/Test/bootstrap.sh
