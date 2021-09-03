@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Documentation for EXT:solr the Apache Solr integration for TYPO3 documentation build configuration file, created by
-# TYPO3 extension sphinx on Wed, 08 Mar 2017 20:55:06 +0100.
+# Documentation for EXT:solrfluidgrouping the grouping integration for Fluid rendering for TYPO3 documentation build configuration file
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -195,8 +194,7 @@ htmlhelp_basename = 'solrdoc'
 # -- Options for LaTeX output ----------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    'papersize': 'a4paper',
 
 # The font size ('10pt', '11pt' or '12pt').
 #'pointsize': '10pt',
@@ -209,7 +207,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('Index', 'solr.tex', u'Documentation for EXT:solrfluidgrouping grouping for EXT:solr',
+    ('Index', 'solrfluidgrouping.tex', u'Documentation for EXT:solrfluidgrouping grouping for EXT:solr',
      u'Timo Hund', 'manual'),
 ]
 
