@@ -30,7 +30,6 @@
     "nimut/testing-framework": "^1.1"
   },
   "replace": {
-    "solrfluidgrouping": "self.version",
     "typo3-ter/solrfluidgrouping": "self.version"
   },
   "autoload": {
