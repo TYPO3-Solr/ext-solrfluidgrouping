@@ -89,6 +89,12 @@ git checkout composer.json
 
 mkdir -p $TYPO3_PATH_WEB/uploads $TYPO3_PATH_WEB/typo3temp
 
-# Setup Solr using install script
-chmod u+x ${TYPO3_PATH_WEB}/typo3conf/ext/solr/Resources/Private/Install/install-solr.sh
-${TYPO3_PATH_WEB}/typo3conf/ext/solr/Resources/Private/Install/install-solr.sh -d "$HOME/solr" -t
+if [[ $* != *--skip-solr-install* ]]; then
+  echo "Setup Solr Using our install script: "
+  chmod u+x ${TYPO3_PATH_WEB}/typo3conf/ext/solr/Resources/Private/Install/install-solr.sh
+  if ! ${TYPO3_PATH_WEB}/typo3conf/ext/solr/Resources/Private/Install/install-solr.sh -d "$HOME/solr" -t
+  then
+    echo "Apache Solr server could not be installed or started. Please fix this issue."
+    exit 1
+  fi
+fi

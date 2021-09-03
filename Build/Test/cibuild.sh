@@ -28,9 +28,12 @@ fi
 
 echo "Run unit tests"
 UNIT_BOOTSTRAP=".Build/vendor/nimut/testing-framework/res/Configuration/UnitTestsBootstrap.php"
-.Build/bin/phpunit --colors -c Build/Test/UnitTests.xml --coverage-html=../../../solrfluidgrouping-coverage-unit/ --bootstrap=$UNIT_BOOTSTRAP
-
-if [ $? -ne "0" ]; then
+if ! .Build/bin/phpunit \
+  --configuration Build/Test/UnitTests.xml \
+  --bootstrap=$UNIT_BOOTSTRAP \
+  --coverage-clover=coverage.unit.clover  \
+  --colors
+then
    echo "Unit tests are failing please fix them"
    TEST_SUITES_STATUS_CODE=1
 fi
@@ -70,7 +73,11 @@ else
 fi
 
 INTEGRATION_BOOTSTRAP=".Build/vendor/nimut/testing-framework/res/Configuration/FunctionalTestsBootstrap.php"
-if ! .Build/bin/phpunit --colors -c Build/Test/IntegrationTests.xml --coverage-html=../../../solrfluidgrouping-coverage-integration/ --bootstrap=$INTEGRATION_BOOTSTRAP
+if ! .Build/bin/phpunit \
+  --configuration Build/Test/IntegrationTests.xml \
+  --bootstrap=$INTEGRATION_BOOTSTRAP \
+  --coverage-clover=coverage.integration.clover \
+  --colors
 then
     echo "Error during running the integration tests please check and fix them"
     TEST_SUITES_STATUS_CODE=1

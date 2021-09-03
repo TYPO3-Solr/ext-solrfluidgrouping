@@ -4,7 +4,7 @@
 
 ---
 conf.py:
-  copyright: 2019
+  copyright: 2021
   project: Documentation for EXT:solrfluidgrouping grouping for solr results
   version: 10.0.0
   release: 10.0.0
