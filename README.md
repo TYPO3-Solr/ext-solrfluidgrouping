@@ -1,8 +1,8 @@
-Apache Solr for TYPO3 - Grouping for fluid templating
+Apache Solr for TYPO3 - Grouping for Fluid templating
 ============================================================
 
 
-[![Build Status](https://travis-ci.com/TYPO3-Solr/ext-solrfluidgrouping.svg?branch=master)](https://travis-ci.com/TYPO3-Solr/ext-solrfluidgrouping)
+[![Build Status](https://github.com/TYPO3-Solr/ext-solrfluidgrouping/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/TYPO3-Solr/ext-solrfluidgrouping/actions?query=branch:master)
 
 About
 -----

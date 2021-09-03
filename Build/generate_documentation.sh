@@ -22,7 +22,7 @@ function doInstallSphinxAndDependencies {
     sudo texhash
 
     # apply font from TYPO3
-    git clone git://git.typo3.org/Documentation/RestTools.git /tmp/RestTools
+    git clone git@github.com:GitTypo3Org/RestTools.git /tmp/RestTools
     cd /tmp/RestTools/LaTeX/font
     ./convert-share.sh
 
@@ -48,14 +48,14 @@ echo "Building latex, which is needed for pdf rendering."
 echo "Please check output, which can contain a hints for the errors in your documents."
 sleep 3
 LANG=en_US.UTF-8
-sphinx-build -b latex -c Documentation -d Documentation/_build/doctrees -w Documentation/_build/warnings.txt -D latex_paper_size=a4 Documentation Documentation/_build/latex
+sphinx-build -b latex -c Documentation -d Documentation/_build/doctrees -w Documentation/_build/warnings.txt Documentation Documentation/_build/latex
 
 
 echo "Building PDF file. This may take some time..."
 '/usr/bin/make' -C 'Documentation/_build/latex' clean all-pdf > Documentation/_build/latexpdf.output.log 2>&1
 
 
-if [ -f Documentation/_build/latex/*.pdf ] ; then
+if [ -f Documentation/_build/latex/solrfluidgrouping.pdf ] ; then
     mv Documentation/_build/latex/*.pdf Documentation/_build/.
     echo "Done! You can find your PDF file inside Documentation/_build/"
 else

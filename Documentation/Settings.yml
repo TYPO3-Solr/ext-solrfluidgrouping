@@ -22,8 +22,8 @@ conf.py:
     - /var/www/dev-master.local.typo3.org/typo3temp/tx_sphinx/intersphinx/t3api-2761377f435645484c196727c22473f7-objects.inv
   latex_documents:
   - - Index
-    - ExtSolr.tex
-    - Apache Solr for TYPO3 - Enterprise search meets enterprise CMS
+    - ExtSolrfluidgrouping.tex
+    - Apache Solr for TYPO3 - Grouping for Fluid rendering
     - Timo Hund
     - manual
   latex_elements:

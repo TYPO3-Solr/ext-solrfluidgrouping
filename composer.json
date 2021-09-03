@@ -58,6 +58,7 @@
       "dev-master": "10.0.x-dev"
     },
     "typo3/cms": {
+      "extension-key": "solrfluidgrouping",
       "cms-package-dir": "{$vendor-dir}/typo3/cms",
       "web-dir": ".Build/Web"
     }
