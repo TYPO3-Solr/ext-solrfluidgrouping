@@ -2,11 +2,15 @@
   "name": "apache-solr-for-typo3/solrfluidgrouping",
   "type": "typo3-cms-extension",
   "description": "Apache Solr for TYPO3",
-  "minimum-stability": "alpha",
   "license": "GPL-2.0+",
   "keywords": ["typo3", "TYPO3 CMS", "solr", "search"],
   "homepage": "http://www.typo3-solr.com",
   "authors": [
+    {
+      "name": "dkd Internet Services GmbH",
+      "email": "solr-eb-support@dkd.de",
+      "homepage": "http://www.dkd.de"
+    },
     {
       "name": "Timo Hund",
       "email": "timo.hund@yahoo.com"
@@ -22,13 +26,16 @@
     "forum": "http://forum.typo3.org/index.php/f/53/"
   },
   "require": {
-    "php": ">=7.2.0",
-    "typo3/cms-core": "^10.4.10",
-    "apache-solr-for-typo3/solr": "^11.1.0"
+    "php": "^7.4.0 || ^8.0",
+    "typo3/cms-core": "^11.5.4",
+    "apache-solr-for-typo3/solr": "^11.5.0 <11.6.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5.6 || ^8",
-    "nimut/testing-framework": "^5.0.0"
+    "phpspec/prophecy-phpunit":"*",
+    "sclable/xml-lint": "*",
+    "friendsofphp/php-cs-fixer": ">= 3.0.0",
+    "typo3/testing-framework": "^6.12",
+    "typo3/coding-standards": ">=0.5.0"
   },
   "autoload": {
     "psr-4": {
@@ -42,6 +49,8 @@
       "TYPO3\\CMS\\Core\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/core/Tests/"
     }
   },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
   "config": {
     "allow-plugins": true,
     "optimize-autoloader": true,
@@ -52,16 +61,41 @@
     "post-autoload-dump": [
       "mkdir -p .Build/Web/typo3conf/ext/",
       "[ -L .Build/Web/typo3conf/ext/solrfluidgrouping ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/solrfluidgrouping"
+    ],
+    "tests:restore-git": "echo \"Restore composer.json to initial state:\" && git checkout composer.json && rm composer.lock",
+    "tests:env": [
+      "if [ \"${TYPO3_VERSION#*dev}\" = \"\" ]; then $COMPOSER_BINARY config minimum-stability dev; fi"
+    ],
+    "tests:setup": [
+      "@tests:env",
+      "@composer req --prefer-source --update-with-all-dependencies typo3/cms-core:${TYPO3_VERSION:-*} apache-solr-for-typo3/solr:$($COMPOSER_BINARY config extra.TYPO3-Solr.CI.matrix.ext-solr)",
+      "@tests:restore-git"
+    ],
+    "tests:unit": [
+      "phpunit --colors --coverage-text --coverage-clover=coverage.unit.clover -c Build/Test/UnitTests.xml --bootstrap=.Build/Web/typo3conf/ext/solr/Build/Test/UnitTestsBootstrap.php"
+    ],
+    "tests:integration": [
+      "phpunit --colors --coverage-text --coverage-clover=coverage.unit.clover -c Build/Test/IntegrationTests.xml --bootstrap=.Build/Web/typo3conf/ext/solr/Build/Test/IntegrationTestsBootstrap.php"
+    ],
+    "t3:standards:fix": [
+      "php-cs-fixer fix"
     ]
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "10.0.x-dev"
+      "dev-master": "11.0.x-dev"
     },
     "typo3/cms": {
       "extension-key": "solrfluidgrouping",
       "cms-package-dir": "{$vendor-dir}/typo3/cms",
       "web-dir": ".Build/Web"
+    },
+    "TYPO3-Solr": {
+      "CI": {
+        "matrix": {
+          "ext-solr": "dev-release-11.5.x"
+        }
+      }
     }
   }
 }

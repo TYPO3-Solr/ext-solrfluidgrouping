@@ -14,7 +14,7 @@
 		solrfluidgrouping
 
 	:Version:
-		10.0.0
+		11.0.0
 
 	:Language:
 		en
@@ -26,7 +26,7 @@
 		search, full text, index, solr, lucene, fast, query, results
 
 	:Copyright:
-		2021
+		since 2018 by dkd
 
 	:Author:
 		Timo Hund

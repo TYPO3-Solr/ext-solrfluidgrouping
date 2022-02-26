@@ -1,28 +1,21 @@
 <?php
-namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
 
-/***************************************************************
- *  Copyright notice
+declare(strict_types=1);
+
+/*
+ * This file is part of the TYPO3 CMS project.
  *
- *  (c) 2017 Timo Hund <timo.hund@dkd.de>
- *  All rights reserved
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * The TYPO3 project - inspiring people to share!
+ */
+
+namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\Grouping as GroupingParameter;
 use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
@@ -31,7 +24,6 @@ use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequestAware;
 use ApacheSolrForTypo3\Solr\Query\Modifier\Modifier;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 
 /**
  * Modifies a query to add grouping parameters
@@ -42,20 +34,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class Grouping implements Modifier, SearchRequestAware
 {
     /**
-     * @var SearchRequest
+     * @var SearchRequest|null
      */
-    protected $searchRequest;
+    protected ?SearchRequest $searchRequest = null;
 
     /**
      * QueryBuilder
      *
-     * @var QueryBuilder|object
+     * @var QueryBuilder
      */
-    protected $queryBuilder;
+    protected QueryBuilder $queryBuilder;
 
     /**
      * AccessComponent constructor.
-     * @param QueryBuilder|null
+     * @param QueryBuilder|null $queryBuilder
      */
     public function __construct(QueryBuilder $queryBuilder = null)
     {
@@ -77,9 +69,9 @@ class Grouping implements Modifier, SearchRequestAware
      * @param Query $query The query to modify
      * @return Query The modified query with grouping parameters
      */
-    public function modifyQuery(Query $query)
+    public function modifyQuery(Query $query): Query
     {
-        $isGroupingEnabled = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGrouping();
+        $isGroupingEnabled = $this->searchRequest->getContextTypoScriptConfiguration()->getIsSearchGroupingEnabled();
         if(!$isGroupingEnabled) {
             return $query;
         }
@@ -98,11 +90,11 @@ class Grouping implements Modifier, SearchRequestAware
         $grouping->setResultsPerGroup($resultsPerGroup);
 
         if (!empty($groupingConfiguration['numberOfGroups'])) {
-            $grouping->setNumberOfGroups($groupingConfiguration['numberOfGroups']);
+            $grouping->setNumberOfGroups((int)$groupingConfiguration['numberOfGroups']);
         }
 
         $configuredGroups = $groupingConfiguration['groups.'];
-        foreach ($configuredGroups as $groupName => $groupConfiguration) {
+        foreach ($configuredGroups as $groupConfiguration) {
             if (!empty($groupConfiguration['field'])) {
                 $grouping->addField($groupConfiguration['field']);
             } else {
@@ -122,9 +114,6 @@ class Grouping implements Modifier, SearchRequestAware
             }
         }
 
-        $query = $this->queryBuilder->startFrom($query)->useGrouping($grouping)->getQuery();
-
-        return $query;
+        return $this->queryBuilder->startFrom($query)->useGrouping($grouping)->getQuery();
     }
 }
-

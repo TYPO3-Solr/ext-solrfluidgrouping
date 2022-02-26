@@ -1,5 +1,4 @@
 <?php
-namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet\Grouping\Parser;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -13,6 +12,8 @@ namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet\Gro
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet\Grouping\Parser;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
@@ -29,7 +30,6 @@ use ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser
  */
 class GroupedResultsParserTest extends UnitTest
 {
-
     /**
      * @test
      */
