@@ -1,8 +1,12 @@
 plugin.tx_solr {
-	view {
-		templateRootPaths {
-			100 = EXT:solrfluidgrouping/Resources/Private/Templates/
-		}
-	}
+  view {
+    templateRootPaths {
+      100 = EXT:solrfluidgrouping/Resources/Private/Templates/
+    }
+
+    partialRootPaths {
+      100 = EXT:solrfluidgrouping/Resources/Private/Partials/
+    }
+  }
 }
 
