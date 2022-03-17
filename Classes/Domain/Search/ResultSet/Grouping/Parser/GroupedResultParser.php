@@ -81,6 +81,9 @@ class GroupedResultParser extends AbstractResultParser {
     protected function parseGroups(SearchResultSet $resultSet, $groupsConfigurations, $searchResultCollection): SearchResultCollection
     {
         $parsedData = $resultSet->getResponse()->getParsedData();
+        if ($parsedData === null) {
+            $parsedData = new \stdClass();
+        }
         $allGroups = new GroupCollection();
 
         foreach ($groupsConfigurations as $name => $groupsConfiguration) {
