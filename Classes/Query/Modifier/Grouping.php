@@ -77,53 +77,17 @@ class Grouping implements Modifier, SearchRequestAware
      * @param Query $query The query to modify
      * @return Query The modified query with grouping parameters
      */
-    public function modifyQuery(Query $query)
+    public function modifyQuery(Query $query): Query
     {
-        $isGroupingEnabled = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGrouping();
-        if(!$isGroupingEnabled) {
-            return $query;
+        $arguments = $this->searchRequest->getArguments();
+        $allowGetParameterSwitch = (bool) $this->searchRequest->getContextTypoScriptConfiguration()
+            ->getValueByPathOrDefaultValue('plugin.tx_solr.search.grouping.allowGetParameterSwitch', false);
+        if ($allowGetParameterSwitch && isset($arguments['grouping']) && $arguments['grouping'] === "off") {
+            $this->queryBuilder->startFrom($query);
+            $this->queryBuilder->useGrouping(GroupingParameter::getEmpty());
+            // reset rows since it was previously set by solr/Classes/Domain/Search/Query/ParameterBuilder/Grouping.php:build
+            $this->queryBuilder->useResultsPerPage($this->searchRequest->getResultsPerPage());
         }
-
-        $grouping = new GroupingParameter(true);
-
-
-        $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getObjectByPathOrDefault('plugin.tx_solr.search.grouping.', []);
-
-        // since apache solr does not support to set the offset per group we calculate the results perGroup value here to
-        // cover the last document
-        $highestGroupPage = $this->searchRequest->getHighestGroupPage();
-        $highestLimit = $this->searchRequest->getContextTypoScriptConfiguration()->getSearchGroupingHighestGroupResultsLimit();
-        $resultsPerGroup = $highestGroupPage * $highestLimit;
-
-        $grouping->setResultsPerGroup($resultsPerGroup);
-
-        if (!empty($groupingConfiguration['numberOfGroups'])) {
-            $grouping->setNumberOfGroups($groupingConfiguration['numberOfGroups']);
-        }
-
-        $configuredGroups = $groupingConfiguration['groups.'];
-        foreach ($configuredGroups as $groupName => $groupConfiguration) {
-            if (!empty($groupConfiguration['field'])) {
-                $grouping->addField($groupConfiguration['field']);
-            } else {
-                // query group
-                if (!empty($groupConfiguration['queries.'])) {
-                    foreach ((array)$groupConfiguration['queries.'] as $_query) {
-                        $grouping->addQuery($_query);
-                    }
-                }
-                if (!empty($groupConfiguration['query'])) {
-                    $grouping->addQuery($groupConfiguration['query']);
-                }
-            }
-
-            if (isset($groupConfiguration['sortBy'])) {
-                $grouping->addSorting($groupConfiguration['sortBy']);
-            }
-        }
-
-        $query = $this->queryBuilder->startFrom($query)->useGrouping($grouping)->getQuery();
-
         return $query;
     }
 }

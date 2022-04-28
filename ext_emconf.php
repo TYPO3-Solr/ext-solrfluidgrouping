@@ -2,7 +2,7 @@
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Apache Solr for TYPO3 - Grouping for fluid rendering',
     'description' => 'This addon provides the grouping for the fluid templating',
-    'version' => '10.0.0',
+    'version' => '11.0.0',
     'state' => 'stable',
     'category' => 'plugin',
     'author' => 'Timo Hund, Frans Saris',
@@ -12,10 +12,10 @@ $EM_CONF[$_EXTKEY] = [
     'constraints' => [
         'depends' => [
             'scheduler' => '',
-            'solr' => '11.1.0-',
-            'extbase' => '10.4.10-10.4.99',
-            'fluid' => '10.4.10-10.4.99',
-            'typo3' => '10.4.10-10.4.99'
+            'solr' => '11.5.0-',
+            'extbase' => '11.5.4-11.5.99',
+            'fluid' => '11.5.4-11.5.99',
+            'typo3' => '11.5.4-11.5.99'
         ],
         'conflicts' => [],
     ],

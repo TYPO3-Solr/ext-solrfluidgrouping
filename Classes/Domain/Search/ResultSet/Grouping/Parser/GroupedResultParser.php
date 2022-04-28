@@ -29,8 +29,7 @@ use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\Group;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupCollection;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupItem;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\GroupItemCollection;
-use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\AbstractResultParser;
-use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\SearchResult;
+use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\DefaultResultParser;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\SearchResultCollection;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
@@ -41,7 +40,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Class GroupedResultParser
  * @package ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser
  */
-class GroupedResultParser extends AbstractResultParser {
+class GroupedResultParser extends DefaultResultParser
+{
 
     /**
      * The parse method creates a SearchResultCollection from the Apache_Solr_Response
@@ -53,7 +53,11 @@ class GroupedResultParser extends AbstractResultParser {
      */
     public function parse(SearchResultSet $resultSet, bool $useRawDocuments = true): SearchResultSet
     {
-        $searchResultCollection = new SearchResultCollection();
+        if ($resultSet->getUsedQuery()->getComponent('grouping', false) === null) {
+            return parent::parse($resultSet, $useRawDocuments);
+        }
+
+        $searchResultCollection = GeneralUtility::makeInstance(SearchResultCollection::class);
 
         $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
         $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
@@ -71,6 +75,20 @@ class GroupedResultParser extends AbstractResultParser {
     }
 
     /**
+     * Returns true when GroupingIsEnabled.
+     *
+     * @param \ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet $resultSet
+     * @return bool
+     */
+    public function canParse(SearchResultSet $resultSet): bool
+    {
+        $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
+        $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
+        $groupingEnabled = $configuration->getIsSearchGroupingEnabled();
+        return $groupingEnabled && (count($groupsConfiguration) > 0);
+    }
+
+    /**
      * Parser the groups depending on the type (fieldGroup or queryGroup) and adds them to the searchResultCollection.
      *
      * @param SearchResultSet $resultSet
@@ -78,7 +96,7 @@ class GroupedResultParser extends AbstractResultParser {
      * @param SearchResultCollection $searchResultCollection
      * @return SearchResultCollection
      */
-    protected function parseGroups(SearchResultSet $resultSet, $groupsConfigurations, $searchResultCollection): SearchResultCollection
+    protected function parseGroups(SearchResultSet $resultSet, array $groupsConfigurations, SearchResultCollection $searchResultCollection): SearchResultCollection
     {
         $parsedData = $resultSet->getResponse()->getParsedData();
         if ($parsedData === null) {
@@ -110,11 +128,13 @@ class GroupedResultParser extends AbstractResultParser {
      * @param string $name
      * @return Group|null
      */
-    protected function parseGroupDependingOnType(SearchResultSet $resultSet, array $options, \stdClass $parsedData, string $name)
+    protected function parseGroupDependingOnType(SearchResultSet $resultSet, array $options, \stdClass $parsedData, string $name): ?Group
     {
         if (!empty($options['field'])) {
             return $this->parseFieldGroup($resultSet, $parsedData, $name, $options);
-        } elseif (!empty($options['queries.']) || !empty($options['query'])) {
+        }
+
+        if (!empty($options['queries.']) || !empty($options['query'])) {
             return $this->parseQueryGroup($resultSet, $parsedData, $name, $options);
         }
 
@@ -124,6 +144,7 @@ class GroupedResultParser extends AbstractResultParser {
     /**
      * Parses the fieldGroup and creates the group object structure from it.
      *
+     * @param SearchResultSet $resultSet
      * @param \stdClass $parsedData
      * @param string $groupedResultName
      * @param array $groupedResultConfiguration
@@ -159,6 +180,7 @@ class GroupedResultParser extends AbstractResultParser {
     /**
      * Parses the queryGroup and creates the group object structure from it.
      *
+     * @param SearchResultSet $resultSet
      * @param \stdClass $parsedData
      * @param string $groupedResultName
      * @param array $groupedResultConfiguration
@@ -201,7 +223,8 @@ class GroupedResultParser extends AbstractResultParser {
      * @param array $configurationArray
      * @return array
      */
-    protected function getQueriesFromConfigurationArray(array $configurationArray) {
+    protected function getQueriesFromConfigurationArray(array $configurationArray): array
+    {
         $queries = [];
 
         if(!empty($configurationArray['query'])) {
@@ -262,7 +285,7 @@ class GroupedResultParser extends AbstractResultParser {
      * @param string $queryString
      * @return string|null
      */
-    protected function getGroupedResultForQuery($parsedData, $queryString)
+    protected function getGroupedResultForQuery($parsedData, $queryString): ?string
     {
         if (!empty($parsedData->grouped->{$queryString})) {
             return $parsedData->grouped->{$queryString};
@@ -272,21 +295,7 @@ class GroupedResultParser extends AbstractResultParser {
     }
 
     /**
-     * Returns true when GroupingIsEnabled.
-     *
-     * @param \ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet $resultSet
-     * @return bool
-     */
-    public function canParse(SearchResultSet $resultSet): bool
-    {
-        $configuration = $resultSet->getUsedSearchRequest()->getContextTypoScriptConfiguration();
-        $groupsConfiguration = $configuration->getSearchGroupingGroupsConfiguration();
-        $groupingEnabled = $configuration->getSearchGrouping();
-        return $groupingEnabled && (count($groupsConfiguration) > 0);
-    }
-
-    /**
-     * Adds all results from all groups the the global search results to have the available in a none grouped
+     * Adds all results from all groups to the global search results to have the available in a none grouped
      * view as well.
      *
      * @param Group $group
@@ -305,12 +314,12 @@ class GroupedResultParser extends AbstractResultParser {
     }
 
     /**
-     * Some data (maximumScore and allResultCount is summarized from all groups and assigned
-     * to the SearchResultSet to have that data available independent from the groups.
+     * Some data maximumScore and allResultCount is summarized from all groups and assigned
+     * to the SearchResultSet to have that data available independent of the groups.
      *
      * @param SearchResultSet $resultSet
      */
-    private function calculateSummarizedGroupData(SearchResultSet $resultSet)
+    protected function calculateSummarizedGroupData(SearchResultSet $resultSet): void
     {
         $overAllMaximumScore = 0.0;
         $allResultCount = 0;
@@ -323,7 +332,6 @@ class GroupedResultParser extends AbstractResultParser {
                 }
 
                 $allResultCount += $groupItem->getAllResultCount();
-
             }
         }
 

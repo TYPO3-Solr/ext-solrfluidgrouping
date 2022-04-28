@@ -47,7 +47,7 @@ checks:
 build:
   environment:
     # We want to test with the smallest supported by TYPO3 PHP version
-    php: 7.2
+    php: 7.4
   dependencies:
     override:
       - composer install --dev --no-interaction --no-scripts

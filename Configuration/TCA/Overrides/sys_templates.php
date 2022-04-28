@@ -3,6 +3,12 @@ defined('TYPO3_MODE') or die();
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
     'solrfluidgrouping',
+    'Configuration/TypoScript/',
+    'Search - solrfluidgrouping configuration'
+);
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+    'solrfluidgrouping',
     'Configuration/TypoScript/Templates/',
     'Search - Use templates from solrfluidgrouping'
 );

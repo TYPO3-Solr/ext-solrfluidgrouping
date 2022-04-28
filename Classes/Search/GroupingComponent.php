@@ -28,23 +28,10 @@ class GroupingComponent extends AbstractComponent
 
     /**
      * Initializes the search component.
-     *
      */
     public function initializeSearchComponent()
     {
-        $groupingEnabled = true;
-        $solrGetParameters = GeneralUtility::_GET('tx_solr');
-
-        if (!empty($this->searchConfiguration['grouping.']['allowGetParameterSwitch'])
-            && isset($solrGetParameters['grouping'])
-            && $solrGetParameters['grouping'] === 'off'
-        ) {
-            $groupingEnabled = false;
-        }
-
-        if ($this->searchConfiguration['grouping'] && $groupingEnabled) {
-            $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['solr']['modifySearchQuery']['fluid_grouping'] =
-                \ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier\Grouping::class;
-        }
+        $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['solr']['modifySearchQuery']['fluid_grouping'] =
+            \ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier\Grouping::class;
     }
 }
