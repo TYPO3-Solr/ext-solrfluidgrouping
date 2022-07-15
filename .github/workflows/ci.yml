@@ -2,11 +2,11 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     tags:
       - "**"
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   EXT_SOLR_VERSION: 'dev-release-11.1.x'
