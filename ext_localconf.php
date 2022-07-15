@@ -1,4 +1,5 @@
 <?php
+
 defined('TYPO3_MODE') or die();
 
 (function () {
@@ -10,7 +11,7 @@ defined('TYPO3_MODE') or die();
         /* @var \ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\ResultParserRegistry $parserRegistry */
         $parserRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\ResultParserRegistry::class);
 
-        if(!$parserRegistry->hasParser(\ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser::class, 200)) {
+        if (!$parserRegistry->hasParser(\ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser::class, 200)) {
             $parserRegistry->registerParser(\ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser::class, 200);
         }
     }

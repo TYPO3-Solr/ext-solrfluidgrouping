@@ -35,7 +35,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
  *
  * @author Frans Saris <frans@beech.it>
  * @author Timo Hund <timo.hund@dkd.de>
- * @package ApacheSolrForTypo3\Solr\Domain\Search\ResultSet
  */
 class SearchResultSetServiceTest extends UnitTest
 {
@@ -97,13 +96,13 @@ class SearchResultSetServiceTest extends UnitTest
                             'numberOfGroups' => 2,
                             'groups.' => [
                                 'typeGroup.' => [
-                                    'field' => 'type'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                    'field' => 'type',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $typoScriptConfiguration = new TypoScriptConfiguration($configurationArray);
@@ -129,9 +128,9 @@ class SearchResultSetServiceTest extends UnitTest
         $objectManagerMock->expects(self::once())
             ->method('get')
             ->willReturn($searchResultSet);
-        $searchResultSetService->expects($this->once())
+        $searchResultSetService->expects(self::once())
             ->method('doASearch')
-            ->will($this->returnValue($fakeResponse));
+            ->willReturn($fakeResponse);
 
         $fakeRequest = $this->getDumbMock(SearchRequest::class);
         $fakeRequest->expects(self::any())
@@ -139,7 +138,7 @@ class SearchResultSetServiceTest extends UnitTest
             ->willReturn(10);
         $fakeRequest->expects(self::any())
             ->method('getContextTypoScriptConfiguration')
-            ->will($this->returnValue($typoScriptConfiguration));
+            ->willReturn($typoScriptConfiguration);
         $fakeRequest->expects(self::any())
             ->method('getAdditionalFilters')
             ->willReturn([]);
@@ -147,48 +146,49 @@ class SearchResultSetServiceTest extends UnitTest
 
         $searchResultSet = $searchResultSetService->search($fakeRequest);
 
-        $this->assertSame(
+        self::assertSame(
             1,
             $searchResultSet->getSearchResults()->getGroups()->getCount(),
             'There should be 1 Groups of search results'
         );
-        $this->assertSame(
+        self::assertSame(
             2,
             $searchResultSet->getSearchResults()->getGroups()->getByPosition(0)->getGroupItems()->getCount(),
-            'The group should contain two group items');
+            'The group should contain two group items'
+        );
 
-            /** @var $firstGroup Group */
+        /** @var $firstGroup Group */
         $firstGroup = $searchResultSet->getSearchResults()->getGroups()->getByPosition(0);
-        $this->assertSame(
+        self::assertSame(
             'typeGroup',
             $firstGroup->getGroupName(),
             'Unexpected groupName for the first group'
         );
 
         $typeGroup = $searchResultSet->getSearchResults()->getGroups()->getByPosition(0)->getGroupItems();
-        $this->assertSame(
+        self::assertSame(
             'pages',
             $typeGroup->getByPosition(0)->getGroupValue(),
             'There should be 5 documents in the group pages'
         );
-        $this->assertSame(
+        self::assertSame(
             5,
             $typeGroup->getByPosition(0)->getSearchResults()->getCount(),
             'There should be 5 documents in the group pages'
         );
 
-        $this->assertSame(
+        self::assertSame(
             'tx_news_domain_model_news',
             $typeGroup->getByPosition(1)->getGroupValue(),
             'There should be 2 documents in the group news'
         );
-        $this->assertSame(
+        self::assertSame(
             2,
             $typeGroup->getByPosition(1)->getSearchResults()->getCount(),
             'There should be 2 documents in the group news'
         );
 
-        $this->assertSame(
+        self::assertSame(
             7,
             $searchResultSet->getSearchResults()->getCount(),
             'There should be a 7 search results when they are fetched without groups'

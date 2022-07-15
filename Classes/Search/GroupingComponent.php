@@ -28,7 +28,6 @@ class GroupingComponent extends AbstractComponent
 
     /**
      * Initializes the search component.
-     *
      */
     public function initializeSearchComponent()
     {

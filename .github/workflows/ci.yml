@@ -14,7 +14,6 @@ env:
   TYPO3_DATABASE_HOST: '127.0.0.1'
   TYPO3_DATABASE_USERNAME: 'root'
   TYPO3_DATABASE_PASSWORD: 'root'
-  PHP_CS_FIXER_VERSION: '^3.0.2'
 
   LOCAL_IMAGE_NAME: 'solrci-image:latest'
   LOCAL_CONTAINER_NAME: 'solrci-container'
@@ -37,30 +36,35 @@ jobs:
     name: TYPO3 ${{ matrix.TYPO3 }} on PHP ${{ matrix.PHP }}
     steps:
       # Workaround for issue with actions/checkout@v2 wrong PR commit checkout: See https://github.com/actions/checkout/issues/299#issuecomment-677674415
-      - name: Checkout current state of Pull Request
+      -
+        name: Checkout current state of Pull Request
         if: github.event_name == 'pull_request'
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Checkout current state of Branch
+      -
+        name: Checkout current state of Branch
         if: github.event_name == 'push'
         uses: actions/checkout@v2
 
-      - name: Mount RAMFS
+      -
+        name: Mount RAMFS
         run: |
           id
           sudo mkdir /ramfs
           sudo mount -t tmpfs -o size=2048m none /ramfs
           sudo mkdir -p /ramfs/data-{solr,mysql,build} && sudo chown $USER /ramfs/data-* && sudo chown 8983:8983 /ramfs/data-solr
 
-      - name: Setup PHP
+      -
+        name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.PHP }}
           coverage: xdebug
           tools: composer:v2
 
-      - name: CI-Bootstrap
+      -
+        name: CI-Bootstrap
         run: |
           echo "CI_BUILD_DIRECTORY=$CI_BUILD_DIRECTORY/"
           cp -r ../ext-solrfluidgrouping $CI_BUILD_DIRECTORY/.
@@ -68,12 +72,14 @@ jobs:
           ./Build/Test/bootstrap.sh --skip-solr-install
           echo "Current Size of EXT:solrfluidgrouping build Artefacts: " && du -sh $CI_BUILD_DIRECTORY/ext-solrfluidgrouping
 
-      - name: Build ext-solr docker image
+      -
+        name: Build ext-solr docker image
         run: |
           cd $CI_BUILD_DIRECTORY/ext-solrfluidgrouping
           docker build -t $LOCAL_IMAGE_NAME -f .Build/Web/typo3conf/ext/solr/Docker/SolrServer/Dockerfile .Build/Web/typo3conf/ext/solr/
 
-      - name: 'Start Docker: Solr, solrfluidgrouping, MySQL'
+      -
+        name: 'Start Docker: Solr, solrfluidgrouping, MySQL'
         run: |
           docker run --name "MySQL-CI" -v /ramfs/data-mysql:/var/lib/mysql -p 3306:3306 \
             -e MYSQL_DATABASE=$TYPO3_DATABASE_NAME \
@@ -84,20 +90,21 @@ jobs:
           docker run --rm --name="$LOCAL_CONTAINER_NAME" -d -p 127.0.0.1:8983:8983 -v "$LOCAL_VOLUME_NAME":"/var/solr" "$LOCAL_IMAGE_NAME"
           docker ps
 
-      - name: CI-Build
+      -
+        name: CI-Build
         run: |
           cd $CI_BUILD_DIRECTORY/ext-solrfluidgrouping
           ./Build/Test/cibuild.sh
           echo "Current Size of EXT:solrfluidgrouping build Artefacts: " && du -sh $CI_BUILD_DIRECTORY/ && du -sh $CI_BUILD_DIRECTORY/ext-solrfluidgrouping/.Build/*
 
-      - name: Upload code coverage to Scrutinizer
+      -
+        name: Clean up
         run: |
-          cd $CI_BUILD_DIRECTORY/ext-solrfluidgrouping
-          mkdir -p $GITHUB_WORKSPACE/bin
-          wget https://scrutinizer-ci.com/ocular.phar -O $GITHUB_WORKSPACE/bin/ocular && chmod +x $GITHUB_WORKSPACE/bin/ocular
-          php $GITHUB_WORKSPACE/bin/ocular code-coverage:upload --format=php-clover coverage.unit.clover
-          [ -f coverage.integration.clover ] && php $GITHUB_WORKSPACE/bin/ocular code-coverage:upload --format=php-clover coverage.integration.clover
-
+          docker stop "MySQL-CI" 2>&1
+          docker stop "$LOCAL_CONTAINER_NAME" 2>&1
+          sudo rm -Rf ${{ env.CI_BUILD_DIRECTORY }}/Web/typo3temp/* \
+            ${{ env.CI_BUILD_DIRECTORY }}/data-mysql \
+            ${{ env.CI_BUILD_DIRECTORY }}/data-solr
   publish:
     name: Publish new version to TER
     needs: tests
@@ -107,21 +114,25 @@ jobs:
       TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
 
     steps:
-      - name: Checkout repository
+      -
+        name: Checkout repository
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Check tag
+      -
+        name: Check tag
         run: |
           if ! [[ ${{ github.ref }} =~ ^refs/tags/[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$ ]]; then
             exit 1
           fi
-      - name: Get version
+      -
+        name: Get version
         id: get-version
         run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
 
-      - name: Get comment
+      -
+        name: Get comment
         id: get-comment
         run: |
           readonly local comment=$(git tag -n99 -l ${{ steps.get-version.outputs.version }} | sed "s/^[0-9.]*[ ]*//g")
@@ -130,17 +141,20 @@ jobs:
           else
             echo -e ::set-output name=comment::$comment
           fi
-      - name: Setup PHP
+      -
+        name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: 7.4
           extensions: intl, mbstring, json, zip, curl
           tools: composer:v2
 
-      - name: Install tailor
+      -
+        name: Install tailor
         run: composer global require typo3/tailor --prefer-dist --no-progress
 
-      - name: Publish EXT:solrfluidgrouping to TER
+      -
+        name: Publish EXT:solrfluidgrouping to TER
         run: |
           echo "Following message will be printed in TER as release description:"
           echo -e "${{ steps.get-comment.outputs.comment }}"

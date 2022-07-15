@@ -112,7 +112,8 @@ class GroupedResultParser extends AbstractResultParser
     ): ?Group {
         if (!empty($options['field'])) {
             return $this->parseFieldGroup($resultSet, $parsedData, $name, $options);
-        } elseif (!empty($options['queries.']) || !empty($options['query'])) {
+        }
+        if (!empty($options['queries.']) || !empty($options['query'])) {
             return $this->parseQueryGroup($resultSet, $parsedData, $name, $options);
         }
 
@@ -211,11 +212,11 @@ class GroupedResultParser extends AbstractResultParser
     {
         $queries = [];
 
-        if(!empty($configurationArray['query'])) {
+        if (!empty($configurationArray['query'])) {
             $queries[] = $configurationArray['query'];
         }
 
-        if(!empty($configurationArray['queries.']) && is_array($configurationArray['queries.'])) {
+        if (!empty($configurationArray['queries.']) && is_array($configurationArray['queries.'])) {
             $queries = array_merge($queries, $configurationArray['queries.']);
         }
 
@@ -258,7 +259,7 @@ class GroupedResultParser extends AbstractResultParser
 
         foreach ($relevantResults as $rawDoc) {
             $solrDocument = new Document();
-            foreach(get_object_vars($rawDoc) as $key => $value) {
+            foreach (get_object_vars($rawDoc) as $key => $value) {
                 $solrDocument->setField($key, $value);
             }
 
@@ -339,7 +340,6 @@ class GroupedResultParser extends AbstractResultParser
                 }
 
                 $allResultCount += $groupItem->getAllResultCount();
-
             }
         }
 

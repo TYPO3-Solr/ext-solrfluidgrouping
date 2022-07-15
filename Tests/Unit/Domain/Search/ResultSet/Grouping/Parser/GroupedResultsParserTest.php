@@ -26,7 +26,6 @@ use ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser
  * Testcase to test the GroupedResultsParser.
  *
  * @author Timo Hund <timo.hund@dkd.de>
- * @package ApacheSolrForTypo3\Solr\Domain\Search\ResultSet
  */
 class GroupedResultsParserTest extends UnitTest
 {
@@ -36,16 +35,16 @@ class GroupedResultsParserTest extends UnitTest
     public function canParsedQueryGroupResult()
     {
         $configurationMock = $this->getDumbMock(TypoScriptConfiguration::class);
-        $configurationMock->expects($this->any())->method('getSearchGroupingGroupsConfiguration')->willReturn([
+        $configurationMock->expects(self::any())->method('getSearchGroupingGroupsConfiguration')->willReturn([
             'pidQuery.' => [
                 'queries.' => [
                     'lessThenTen' => 'pid:[0 TO 10]',
                     'lessThen30' => 'pid:[11 TO 30]',
-                    'rest' => 'pid:[30 TO *]'
-                ]
-            ]
+                    'rest' => 'pid:[30 TO *]',
+                ],
+            ],
         ]);
-        $configurationMock->expects($this->any())->method('getSearchGroupingResultLimit')->willReturn(5);
+        $configurationMock->expects(self::any())->method('getSearchGroupingResultLimit')->willReturn(5);
 
         $resultSet = $this->getSearchResultSetMockFromConfigurationAndFixtureFileName($configurationMock, 'fake_solr_response_group_on_queries.json');
 
@@ -53,12 +52,12 @@ class GroupedResultsParserTest extends UnitTest
         $searchResultsSet = $parser->parse($resultSet);
         $searchResultsCollection = $searchResultsSet->getSearchResults();
 
-        $this->assertTrue($searchResultsCollection->getHasGroups());
-        $this->assertSame(1, $searchResultsCollection->getGroups()->getCount());
+        self::assertTrue($searchResultsCollection->getHasGroups());
+        self::assertSame(1, $searchResultsCollection->getGroups()->getCount());
 
         $queryGroup = $searchResultsCollection->getGroups()->getByPosition(0)->getGroupItems();
-        $this->assertSame(5, $queryGroup->getByPosition(0)->getSearchResults()->getCount());
-        $this->assertSame(3, $queryGroup->getCount(), 'Unexpected amount of groups in parsing result');
+        self::assertSame(5, $queryGroup->getByPosition(0)->getSearchResults()->getCount());
+        self::assertSame(3, $queryGroup->getCount(), 'Unexpected amount of groups in parsing result');
     }
 
     /**
@@ -67,12 +66,12 @@ class GroupedResultsParserTest extends UnitTest
     public function canParsedQueryFieldResult()
     {
         $configurationMock = $this->getDumbMock(TypoScriptConfiguration::class);
-        $configurationMock->expects($this->any())->method('getSearchGroupingGroupsConfiguration')->willReturn([
+        $configurationMock->expects(self::any())->method('getSearchGroupingGroupsConfiguration')->willReturn([
             'typeGroup.' => [
-                'field' => 'type'
-            ]
+                'field' => 'type',
+            ],
         ]);
-        $configurationMock->expects($this->any())->method('getSearchGroupingResultLimit')->willReturn(5);
+        $configurationMock->expects(self::any())->method('getSearchGroupingResultLimit')->willReturn(5);
 
         $resultSet = $this->getSearchResultSetMockFromConfigurationAndFixtureFileName($configurationMock, 'fake_solr_response_group_on_type_field.json');
 
@@ -80,24 +79,23 @@ class GroupedResultsParserTest extends UnitTest
         $searchResultsSet = $parser->parse($resultSet);
         $searchResultsCollection = $searchResultsSet->getSearchResults();
 
-
-        $this->assertTrue($searchResultsCollection->getHasGroups());
-        $this->assertSame(1, $searchResultsCollection->getGroups()->getCount(), 'There should be 1 Groups of search results');
-        $this->assertSame(2, $searchResultsCollection->getGroups()->getByPosition(0)->getGroupItems()->getCount(), 'The group should contain two group items');
+        self::assertTrue($searchResultsCollection->getHasGroups());
+        self::assertSame(1, $searchResultsCollection->getGroups()->getCount(), 'There should be 1 Groups of search results');
+        self::assertSame(2, $searchResultsCollection->getGroups()->getByPosition(0)->getGroupItems()->getCount(), 'The group should contain two group items');
 
         /** @var $firstGroup Group */
         $firstGroup = $searchResultsCollection->getGroups()->getByPosition(0);
-        $this->assertSame('typeGroup', $firstGroup->getGroupName(), 'Unexpected groupName for the first group');
+        self::assertSame('typeGroup', $firstGroup->getGroupName(), 'Unexpected groupName for the first group');
 
         $typeGroup = $searchResultsCollection->getGroups()->getByPosition(0)->getGroupItems();
-        $this->assertSame('pages', $typeGroup->getByPosition(0)->getGroupValue(), 'There should be 5 documents in the group pages');
-        $this->assertSame(5, $typeGroup->getByPosition(0)->getSearchResults()->getCount(), 'There should be 5 documents in the group pages');
+        self::assertSame('pages', $typeGroup->getByPosition(0)->getGroupValue(), 'There should be 5 documents in the group pages');
+        self::assertSame(5, $typeGroup->getByPosition(0)->getSearchResults()->getCount(), 'There should be 5 documents in the group pages');
 
-        $this->assertSame('tx_news_domain_model_news', $typeGroup->getByPosition(1)->getGroupValue(), 'There should be 2 documents in the group news');
-        $this->assertSame(2, $typeGroup->getByPosition(1)->getSearchResults()->getCount(), 'There should be 2 documents in the group news');
+        self::assertSame('tx_news_domain_model_news', $typeGroup->getByPosition(1)->getGroupValue(), 'There should be 2 documents in the group news');
+        self::assertSame(2, $typeGroup->getByPosition(1)->getSearchResults()->getCount(), 'There should be 2 documents in the group news');
 
-        $this->assertSame(7, $searchResultsCollection->getCount(), 'There should be a 7 search results when they are fetched without groups');
-        $this->assertSame(44, $resultSet->getAllResultCount(), 'Unexpected allResultCount');
+        self::assertSame(7, $searchResultsCollection->getCount(), 'There should be a 7 search results when they are fetched without groups');
+        self::assertSame(44, $resultSet->getAllResultCount(), 'Unexpected allResultCount');
     }
 
     /**
@@ -108,10 +106,10 @@ class GroupedResultsParserTest extends UnitTest
     protected function getSearchResultSetMockFromConfigurationAndFixtureFileName(TypoScriptConfiguration $configurationMock, string $fixtureName)
     {
         $searchRequestMock = $this->getDumbMock(SearchRequest::class);
-        $searchRequestMock->expects($this->any())->method('getContextTypoScriptConfiguration')->will($this->returnValue($configurationMock));
+        $searchRequestMock->expects(self::any())->method('getContextTypoScriptConfiguration')->willReturn($configurationMock);
         $resultSet = $this->getMockBuilder(SearchResultSet::class)->setMethods(['getUsedSearchRequest', 'getResponse'])->getMock();
-        $resultSet->expects($this->any())->method('getUsedSearchRequest')->willReturn($searchRequestMock);
-        $resultSet->expects($this->any())->method('getResponse')->willReturn($this->getFakeApacheSolrResponse($fixtureName));
+        $resultSet->expects(self::any())->method('getUsedSearchRequest')->willReturn($searchRequestMock);
+        $resultSet->expects(self::any())->method('getResponse')->willReturn($this->getFakeApacheSolrResponse($fixtureName));
 
         return $resultSet;
     }
