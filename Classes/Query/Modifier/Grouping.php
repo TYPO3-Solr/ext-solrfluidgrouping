@@ -18,8 +18,8 @@ declare(strict_types=1);
 namespace ApacheSolrForTypo3\Solrfluidgrouping\Query\Modifier;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\Query\ParameterBuilder\Grouping as GroupingParameter;
-use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
 use ApacheSolrForTypo3\Solr\Domain\Search\Query\Query;
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequestAware;
 use ApacheSolrForTypo3\Solr\Query\Modifier\Modifier;
@@ -72,12 +72,11 @@ class Grouping implements Modifier, SearchRequestAware
     public function modifyQuery(Query $query): Query
     {
         $isGroupingEnabled = $this->searchRequest->getContextTypoScriptConfiguration()->getIsSearchGroupingEnabled();
-        if(!$isGroupingEnabled) {
+        if (!$isGroupingEnabled) {
             return $query;
         }
 
         $grouping = new GroupingParameter(true);
-
 
         $groupingConfiguration = $this->searchRequest->getContextTypoScriptConfiguration()->getObjectByPathOrDefault('plugin.tx_solr.search.grouping.', []);
 

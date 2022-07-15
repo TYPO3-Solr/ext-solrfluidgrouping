@@ -30,7 +30,6 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class GroupItemPaginateViewHelper extends AbstractSolrViewHelper
 {
-
     protected $escapeChildren = false;
     protected $escapeOutput = false;
 
@@ -68,7 +67,7 @@ class GroupItemPaginateViewHelper extends AbstractSolrViewHelper
                 'pagination' => $pagination,
                 'configuration' => $configuration,
                 'resultSet' => $this->arguments['resultSet'],
-                'groupItem' => $this->arguments['groupItem']
+                'groupItem' => $this->arguments['groupItem'],
             ]
         );
 
