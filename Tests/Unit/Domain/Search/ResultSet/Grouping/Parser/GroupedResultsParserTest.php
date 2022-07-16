@@ -13,7 +13,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Domain\Search\ResultSet\Grouping\Parser;
+namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Unit\Domain\Search\ResultSet\Grouping\Parser;
 
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
