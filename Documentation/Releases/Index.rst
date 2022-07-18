@@ -15,6 +15,7 @@ Releases
 	:maxdepth: 5
 	:glob:
 
+	solrfluidgrouping-release-11-0
 	solrfluidgrouping-release-10-0
 	solrfluidgrouping-release-02-1
 	solrfluidgrouping-release-02-0
