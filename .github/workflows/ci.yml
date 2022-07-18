@@ -132,16 +132,6 @@ jobs:
         run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}
 
       -
-        name: Get comment
-        id: get-comment
-        run: |
-          readonly local comment=$(git tag -n99 -l ${{ steps.get-version.outputs.version }} | sed "s/^[0-9.]*[ ]*//g")
-          if [[ -z "${comment// }" ]]; then
-            echo ::set-output name=comment::Released version ${{ steps.get-version.outputs.version }} of EXT:solrfluidgrouping
-          else
-            echo -e ::set-output name=comment::$comment
-          fi
-      -
         name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -156,6 +146,11 @@ jobs:
       -
         name: Publish EXT:solrfluidgrouping to TER
         run: |
+          export RELEASE_VERSION=${GITHUB_REF/refs\/tags\//}
+          export TER_COMMENT=$(git tag -n99 -l "$RELEASE_VERSION" | sed "s/^[0-9.]*[ ]*//g")
+          if [[ -z "${TER_COMMENT// }" ]]; then
+            export TER_COMMENT="Released version $RELEASE_VERSION of EXT:solrfluidgrouping"
+          fi
           echo "Following message will be printed in TER as release description:"
-          echo -e "${{ steps.get-comment.outputs.comment }}"
-          php ~/.composer/vendor/bin/tailor ter:publish --comment "${{ steps.get-comment.outputs.comment }}" ${{ steps.get-version.outputs.version }}
+          echo -e "$TER_COMMENT"
+          php ~/.composer/vendor/bin/tailor ter:publish --comment "$TER_COMMENT" "$RELEASE_VERSION"
