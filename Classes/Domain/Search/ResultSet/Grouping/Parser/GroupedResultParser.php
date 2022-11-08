@@ -245,7 +245,7 @@ class GroupedResultParser extends AbstractResultParser
             $groupValue,
             $rawGroup->doclist->numFound,
             $rawGroup->doclist->start,
-            $rawGroup->doclist->maxScore,
+            (float)$rawGroup->doclist->maxScore,
             $searchRequest
         );
 
