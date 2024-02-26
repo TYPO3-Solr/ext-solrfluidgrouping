@@ -52,7 +52,7 @@ jobs:
         run: |
           id
           sudo mkdir /ramfs
-          sudo mount -t tmpfs -o size=2048m none /ramfs
+          sudo mount -t tmpfs -o size=2560m none /ramfs
           sudo mkdir -p /ramfs/data-{solr,mysql,build} && sudo chown $USER /ramfs/data-* && sudo chown 8983:8983 /ramfs/data-solr
 
       -
