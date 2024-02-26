@@ -15,13 +15,16 @@
 
 namespace ApacheSolrForTypo3\Solrfluidgrouping\Tests\Unit\Domain\Search\ResultSet;
 
+use ApacheSolrForTypo3\Solr\Domain\Search\Query\QueryBuilder;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Grouping\Group;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\Result\Parser\ResultParserRegistry;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSet;
 use ApacheSolrForTypo3\Solr\Domain\Search\ResultSet\SearchResultSetService;
 use ApacheSolrForTypo3\Solr\Domain\Search\SearchRequest;
+use ApacheSolrForTypo3\Solr\Domain\Site\SiteHashService;
 use ApacheSolrForTypo3\Solr\Search;
 use ApacheSolrForTypo3\Solr\System\Configuration\TypoScriptConfiguration;
+use ApacheSolrForTypo3\Solr\System\Logging\SolrLogManager;
 use ApacheSolrForTypo3\Solr\System\Solr\ResponseAdapter;
 use ApacheSolrForTypo3\Solr\Tests\Unit\UnitTest;
 use ApacheSolrForTypo3\Solrfluidgrouping\Domain\Search\ResultSet\Grouping\Parser\GroupedResultParser;
@@ -43,7 +46,6 @@ class SearchResultSetServiceTest extends UnitTest
      */
     public function canCreateGroups()
     {
-
         // source: http://solr-ddev-site.ddev.site:8983/solr/core_en/select
         //  ?fl=*%2Cscore
         //  &fq=siteHash%3A%229e9d76a598c63d4ff578fea5c5254c27d9554fc6%22
@@ -111,6 +113,15 @@ class SearchResultSetServiceTest extends UnitTest
         $parserRegistry = GeneralUtility::makeInstance(ResultParserRegistry::class, $typoScriptConfiguration);
         $parserRegistry->registerParser(GroupedResultParser::class, 300);
 
+        $logManagerMock = $this->createMock(SolrLogManager::class);
+        $siteHashServiceMock = $this->createMock(SiteHashService::class);
+        $queryBuilder = GeneralUtility::makeInstance(
+            QueryBuilder::class,
+            $typoScriptConfiguration,
+            $logManagerMock,
+            $siteHashServiceMock
+        );
+
         $objectManagerMock = $this->getDumbMock(ObjectManagerInterface::class);
         /* @var SearchResultSetService|MockObject $searchResultSetService */
         $searchResultSetService = $this->getMockBuilder(SearchResultSetService::class)
@@ -120,7 +131,7 @@ class SearchResultSetServiceTest extends UnitTest
                 $searchMock,
                 null,
                 null,
-                null,
+                $queryBuilder,
                 $objectManagerMock,
             ])->getMock();
 
